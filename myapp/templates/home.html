@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Django App</title>
+</head>
+<body>
+    <h1>My Django App</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Stored Items:</h2>
+    <ul>
+    {% for item in items %}
+        <li>{{ item.name }}: {{ item.description }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
