@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 # run migration
-python manage.py migrate
+python manage.py migrate --noinput
 # Collect static files
 python manage.py collectstatic --noinput --clear
 

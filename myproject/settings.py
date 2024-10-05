@@ -10,12 +10,14 @@ DEBUG = True
 
 env = environ.Env(
     ALLOWED_HOSTS=(list, []),
-    CSRF_TRUSTED_ORIGINS=(list, [])
+    CSRF_TRUSTED_ORIGINS=(list, []),
+    DJANGO_AUTO_MIGRATE=(bool, False)
 )
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # Update for prod
 # Add this line to disable CSRF protection for testing purposes
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
+DJANGO_AUTO_MIGRATE = 'false'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,6 +69,9 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
+
+if os.environ.get('DJANGO_DISABLE_MIGRATIONS', 'False').lower() == 'true':
+    MIGRATION_MODULES = {'myapp': None}
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
