@@ -10,8 +10,7 @@ DEBUG = True
 
 env = environ.Env(
     ALLOWED_HOSTS=(list, []),
-    CSRF_TRUSTED_ORIGINS=(list, []),
-    DJANGO_AUTO_MIGRATE=(bool, False)
+    CSRF_TRUSTED_ORIGINS=(list, [])
 )
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # Update for prod
@@ -70,7 +69,9 @@ DATABASES = {
     }
 }
 
+# Django automatically creates the app tables, so we control it.
 if os.environ.get('DJANGO_DISABLE_MIGRATIONS', 'False').lower() == 'true':
+    # Add all or any apps.
     MIGRATION_MODULES = {'myapp': None}
 
 STATIC_URL = '/static/'
