@@ -1,8 +1,29 @@
 ---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: http-01-production
+spec:
+  acme:
+    email: your-email@devopsbyexample.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: http-01-production-cluster-issuer # secrets get created in cert-manager-namespace
+    solvers:
+      - http01: # two types of challenges, http-01 and dns-01. dns-01 needs a dns record to be created
+          ingress:
+            ingressClassName: external-nginx
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: django-app
+  namespace: webapp
 spec:
   replicas: 1
   selector:
@@ -17,7 +38,7 @@ spec:
       - name: django-app
         image: prabhjotbawa/mywebapp:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
         env:
         - name: DJANGO_DISABLE_MIGRATIONS
           value: 'true'
@@ -38,46 +59,54 @@ spec:
         - name: DB_PORT
           value: "5432"
         - name: ALLOWED_HOSTS
-          value: localhost,127.0.0.1,0.0.0.0
+          value: testapp.prabhjotbawa.com
         - name: CSRF_TRUSTED_ORIGINS
-          value: http://localhost:5001/, http://127.0.0.1:5001/
+          value: https://testapp.prabhjotbawa.com
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: django-app-service
+  namespace: webapp
 spec:
   selector:
     app: django-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 5000
-  type: LoadBalancer  # Changed from LoadBalancer to ClusterIP
+      port: 5001
+      targetPort: 5001
+  type: ClusterIP  # Changed from LoadBalancer to ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: django-app-ingress
+  namespace: webapp
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: http-01-production # points to the cluster issuer
 spec:
-  ingressClassName: nginx
+  ingressClassName: external-nginx
   rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: django-app-service
-            port:
-              number: 80
+    - host: testapp.prabhjotbawa.com # Create a CNAME DNS record in Route 53 to point to the LB
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: django-app-service
+                port:
+                  number: 5001
+  tls:
+    - hosts:
+        - testapp.prabhjotbawa.com
+      secretName: testapp-prabhjotbawa-com
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: webapp
 spec:
   replicas: 1
   selector:
@@ -122,6 +151,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
+  namespace: webapp
 spec:
   selector:
     app: postgres
@@ -134,6 +164,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: postgres-secrets
+  namespace: webapp
 type: Opaque
 data:
   postgres-user: bXl1c2Vy  # base64 encoded "myuser"
@@ -143,6 +174,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-init-script
+  namespace: webapp
 data:
   init.sh: |
     #!/bin/bash

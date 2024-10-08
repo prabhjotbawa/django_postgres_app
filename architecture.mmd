@@ -1,0 +1,46 @@
+flowchart TB
+    User([User])
+    DNS[DNS]
+    NLB[Network Load Balancer]
+    Ingress[NGINX Ingress Controller]
+    App[My Simple App Pod]
+
+    subgraph Internet
+        User
+        DNS
+    end
+
+    subgraph AWS-Cloud[AWS Cloud]
+        subgraph VPC[VPC]
+            subgraph PublicSubnet[Public Subnet]
+                NLB
+            end
+            subgraph PrivateSubnet[Private Subnet]
+                subgraph EKS[EKS Cluster]
+                    Ingress
+                    App
+                end
+            end
+        end
+    end
+
+    User -->|1. Request testapp.prabhjotbawa.com| DNS
+    DNS -->|2. Resolve to NLB IP| User
+    User -->|3. HTTP Request| NLB
+    NLB -->|4. Forward Request| Ingress
+    Ingress -->|5. Route to App| App
+    App -.->|6. Response| Ingress
+    Ingress -.->|7. Response| NLB
+    NLB -.->|8. Response| User
+
+    classDef aws fill:#FF9900,stroke:#232F3E,color:#232F3E;
+    classDef pod fill:#326CE5,stroke:#fff,color:#fff;
+    classDef vpc fill:#F58536,stroke:#232F3E,color:#232F3E;
+    classDef subnet fill:#5A9AD6,stroke:#232F3E,color:#232F3E;
+    classDef cluster fill:#68A063,stroke:#232F3E,color:#232F3E;
+
+    class NLB,DNS aws;
+    class App,Ingress pod;
+    class VPC vpc;
+    class PublicSubnet,PrivateSubnet subnet;
+    class EKS cluster;
