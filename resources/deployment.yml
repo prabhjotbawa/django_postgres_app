@@ -41,7 +41,7 @@ spec:
         - containerPort: 5001
         env:
         - name: DJANGO_DISABLE_MIGRATIONS
-          value: 'true'
+          value: 'false' # Run migration
         - name: DB_NAME
           value: mydatabase
         - name: DB_USER
@@ -138,14 +138,9 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
-        - name: init-script
-          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-storage
         emptyDir: {}
-      - name: init-script
-        configMap:
-          name: postgres-init-script
 ---
 apiVersion: v1
 kind: Service
