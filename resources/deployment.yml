@@ -40,6 +40,10 @@ spec:
         ports:
         - containerPort: 5001
         env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         - name: DJANGO_DISABLE_MIGRATIONS
           value: 'false' # Run migration
         - name: DB_NAME

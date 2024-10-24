@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect
 from .models import MyModel
 from .forms import MyModelForm
@@ -13,4 +15,5 @@ def home(request):
         form = MyModelForm()
 
     items = MyModel.objects.all()
-    return render(request, 'home.html', {'form': form, 'items': items})
+    return render(request, 'home.html', {'form': form, 'items': items,
+                                         'env_value': os.environ.get('NODE_NAME', 'Default Node')})
