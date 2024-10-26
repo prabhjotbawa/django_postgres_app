@@ -65,7 +65,9 @@ The solid lines are requests and dotted lines are responses.
 I used **Terraform** to provision a single node cluster.
 
 ## Installing via helm (Recommended)
-Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions
+Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added the ability to
+capture `data-inserted` [custom metrics](custom-metrics.png)  and get scraped by Prometheus. 
+
 
 ## TODO
 The app could fail to launch if postgres isn't running using `docker-compose`. 
