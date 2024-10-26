@@ -64,6 +64,9 @@ The solid lines are requests and dotted lines are responses.
 
 I used **Terraform** to provision a single node cluster.
 
+## Installing via helm (Recommended)
+Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions
+
 ## TODO
 The app could fail to launch if postgres isn't running using `docker-compose`. 
 It's probably not waiting long enough for the database to get ready, although it calls a script to wait.
