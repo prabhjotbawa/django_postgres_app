@@ -1,6 +1,8 @@
 import os
-
 from environ import environ
+
+from myproject.utlis import get_pod_ip
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -12,6 +14,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, [])
 )
+
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # Update for prod
 # Add this line to disable CSRF protection for testing purposes
@@ -71,6 +74,13 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
+
+# Add Pod IP to allow Prometheus for scraping metrics
+if os.environ.get('ENABLE_METRICS', 'False').lower() == 'true':
+    pod_ip = get_pod_ip()
+    if pod_ip and pod_ip not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(pod_ip)
+
 
 # Django automatically creates the app tables, so we control it.
 if os.environ.get('DJANGO_DISABLE_MIGRATIONS', 'False').lower() == 'true':

@@ -1,8 +1,9 @@
 import os
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 
+from myproject import settings
 from .models import MyModel
 from .forms import MyModelForm
 
@@ -25,3 +26,14 @@ def get_data_inserted(request):
     if request.method == 'GET':
         row_count = MyModel.objects.count()
         return HttpResponse(row_count)
+
+
+# Added for debugging purposes
+def debug_view(request):
+    return JsonResponse({
+        'allowed_hosts': settings.ALLOWED_HOSTS,
+        'debug_mode': settings.DEBUG,
+        'host_header': request.META.get('HTTP_HOST'),
+        'remote_addr': request.META.get('REMOTE_ADDR'),
+        'x_forwarded_for': request.META.get('HTTP_X_FORWARDED_FOR'),
+    })

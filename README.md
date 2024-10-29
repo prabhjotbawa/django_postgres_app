@@ -66,7 +66,7 @@ I used **Terraform** to provision a single node cluster.
 
 ## Installing via helm (Recommended)
 Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added the ability to
-capture `data-inserted` [custom metrics](custom-metrics.png)  and get scraped by Prometheus. 
+capture `data-inserted` [custom metrics](custom-metrics.png) and get scraped by Prometheus. 
 
 
 ## TODO

@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from myapp.views import home, get_data_inserted
+from myapp.views import home, get_data_inserted, debug_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('', include('django_prometheus.urls')),
-    path('data/', get_data_inserted)
+    path('data/', get_data_inserted),
+    path('debug/', debug_view),
 ]
