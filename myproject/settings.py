@@ -19,7 +19,6 @@ env = environ.Env(
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # Update for prod
 # Add this line to disable CSRF protection for testing purposes
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
-DJANGO_AUTO_MIGRATE = 'false'
 
 INSTALLED_APPS = [
     'django.contrib.admin',

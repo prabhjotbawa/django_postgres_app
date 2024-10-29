@@ -1,4 +1,5 @@
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
+from django.db.utils import ProgrammingError
 
 
 class ModelRowsCollector:
@@ -6,13 +7,18 @@ class ModelRowsCollector:
         pass
 
     def collect(self):
-        # This method is called each time the metrics endpoint is hit
         from myapp.models import MyModel  # Import here to avoid circular imports
+
+        try:
+            count = MyModel.objects.count()
+        except ProgrammingError:
+            # Table doesn't exist yet (e.g. during migrations)
+            count = 0
 
         g = GaugeMetricFamily(
             'data_inserted',
             'number of rows',
-            value=MyModel.objects.count()
+            value=count
         )
         yield g
 
