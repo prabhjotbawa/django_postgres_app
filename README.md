@@ -66,15 +66,13 @@ I used **Terraform** to provision a single node cluster.
 
 ## Installing via helm (Recommended)
 Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added the ability to
-capture `data-inserted` [custom metrics](custom-metrics.png) and get scraped by Prometheus. 
+capture `data-inserted` [custom metrics](custom-metrics.png) and get scraped by Prometheus. The app registers the metrics with
+Prometheus when `custom-metrics` endpoint is invoked.
 
 
 ## TODO
-The app could fail to launch if postgres isn't running using `docker-compose`. 
-It's probably not waiting long enough for the database to get ready, although it calls a script to wait.
-Workaround: Re-run the web service from docker-compose and app runs just fine.
-
-The same issue is not seen when running the app on kubernetes since it handles it gracefully.
+Add unit tests to test the code.
+Simulate scenarios to test app launch when database is created v/s database already exists.
 
 **Please note**: 
 * For production, `persistent volume claims` must be used to store the data. Since, I have not used PVC's, the data is 

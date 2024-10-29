@@ -2,8 +2,10 @@ import os
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from myproject import settings
+from .collectors import register_model_rows_collector
 from .models import MyModel
 from .forms import MyModelForm
 
@@ -37,3 +39,8 @@ def debug_view(request):
         'remote_addr': request.META.get('REMOTE_ADDR'),
         'x_forwarded_for': request.META.get('HTTP_X_FORWARDED_FOR'),
     })
+
+
+def get_metrics(request):
+    register_model_rows_collector()
+    return HttpResponse(generate_latest(), content_type=CONTENT_TYPE_LATEST)
