@@ -65,10 +65,15 @@ The solid lines are requests and dotted lines are responses.
 I used **Terraform** to provision a single node cluster.
 
 ## Installing via helm (Recommended)
-Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added the ability to
-capture `data-inserted` [custom metrics](custom-metrics.png) and get scraped by Prometheus. The app registers the metrics with
-Prometheus when `custom-metrics` endpoint is invoked.
-
+Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added a custom metric to
+capture `data-inserted` [custom metrics](custom-metrics.png). The app registers the metrics with Prometheus when `custom-metrics`
+endpoint is invoked. The app also exports db metrics and other default metrics like 
+```
+django_db_new_connections_created
+django_db_execute_total
+django_http_responses_total_by_status_total
+django_http_responses_body_total_bytes_created
+```
 
 ## TODO
 Add unit tests to test the code.

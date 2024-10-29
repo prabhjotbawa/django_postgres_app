@@ -43,4 +43,5 @@ def debug_view(request):
 
 def get_metrics(request):
     register_model_rows_collector()
+    # Generate and return metrics in Prometheus format
     return HttpResponse(generate_latest(), content_type=CONTENT_TYPE_LATEST)

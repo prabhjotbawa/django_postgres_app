@@ -3,7 +3,6 @@ from environ import environ
 
 from myproject.utlis import get_pod_ip
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'your-secret-key-here'
@@ -14,7 +13,6 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, [])
 )
-
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # Update for prod
 # Add this line to disable CSRF protection for testing purposes
@@ -39,6 +37,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'myapp.middleware.DBConnectionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
@@ -65,12 +65,19 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django_prometheus.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME', 'mydatabase'),
         'USER': os.environ.get('DB_USER', 'myuser'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'mypassword'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '5432'),
+        'CONN_MAX_AGE': None,  # Persistent connections
+        'OPTIONS': {
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 5,
+        }
     }
 }
 
@@ -79,7 +86,6 @@ if os.environ.get('ENABLE_METRICS', 'False').lower() == 'true':
     pod_ip = get_pod_ip()
     if pod_ip and pod_ip not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(pod_ip)
-
 
 # Django automatically creates the app tables, so we control it.
 if os.environ.get('DJANGO_DISABLE_MIGRATIONS', 'False').lower() == 'true':
@@ -104,4 +110,21 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+# For debugging connection issues
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
 }
