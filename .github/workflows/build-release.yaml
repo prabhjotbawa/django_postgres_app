@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Scan image with Trivy
-        uses: docker://ghcr.io/aquasecurity/trivy:0.18.3
+        uses: docker://docker.io/prabhjotbawa/trivy:0.18.3
         with:
           args: >
             image 
