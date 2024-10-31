@@ -38,13 +38,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Scan image with Trivy
-        uses: docker://docker.io/prabhjotbawa/trivy:0.18.3
-        with:
-          args: >
-            image 
-            --exit-code 1 
-            --severity HIGH,CRITICAL 
-            ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+        run: |
+          # Create results directory
+          mkdir -p trivy-results
+          
+          # Scan and generate SARIF report
+          docker run --rm \
+           -v $(pwd)/trivy-results:/results \
+           docker.io/prabhjotbawa/trivy:0.18.3 \
+           image \
+           --format sarif \
+           --output /results/trivy-report.sarif \
+           --severity HIGH,CRITICAL \
+           ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+          - name: Upload Trivy scan results to GitHub Security tab
+            uses: github/codeql-action/upload-sarif@v3
+            with:
+              sarif_file: trivy-results/trivy-report.sarif
 
   push:
     needs: build
