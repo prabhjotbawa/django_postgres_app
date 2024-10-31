@@ -37,25 +37,19 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Scan image with Trivy
-        run: |
-          # Create results directory
-          mkdir -p trivy-results
-          
-          # Scan and generate SARIF report
-          docker run --rm \
-           -v $(pwd)/trivy-results:/results \
-           docker.io/prabhjotbawa/trivy:0.18.3 \
-           image \
-           --format sarif \
-           --output /results/trivy-report.sarif \
-           --severity HIGH,CRITICAL \
-           ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+     - name: Run Trivy vulnerability scanner
+       uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+       with:
+          image-ref: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
 
-          - name: Upload Trivy scan results to GitHub Security tab
-            uses: github/codeql-action/upload-sarif@v3
-            with:
-              sarif_file: trivy-results/trivy-report.sarif
+     - name: Upload Trivy scan results to GitHub Security tab
+       uses: github/codeql-action/upload-sarif@v3
+       with:
+          sarif_file: 'trivy-results.sarif'
 
   push:
     needs: build
