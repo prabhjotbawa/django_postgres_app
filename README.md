@@ -66,14 +66,22 @@ I used **Terraform** to provision a single node cluster.
 
 ## Installing via helm (Recommended)
 Please refer https://prabhjotbawa.github.io/helm-charts/ for detailed instructions. I have also added a custom metric to
-capture `data-inserted` [custom metrics](custom-metrics.png). The app registers the metrics with Prometheus when `custom-metrics`
-endpoint is invoked. The app also exports db metrics and other default metrics like 
+capture `data-inserted` [custom metrics](custom-metrics.png) and a grafana [dashboard](grafana-dashboard.png). 
+The app registers the metrics with Prometheus when `custom-metrics` endpoint is invoked. 
+The app also exports db metrics and other default metrics like 
 ```
 django_db_new_connections_created
 django_db_execute_total
 django_http_responses_total_by_status_total
 django_http_responses_body_total_bytes_created
 ```
+As for the grafana dashboard, 
+I chose the data source as Prometheus and selected the metrics to show as a Gauge on grafana.
+Grafana is available by default if prometheus is installed via the helm chart. 
+Please [refer](https://prabhjotbawa.github.io/helm-charts/) for details.
+
+If installing on AWS, prometheus or grafana can be exposed locally using `kubectl port-forward` or using an `ingress`
+resource.
 
 ## TODO
 Add unit tests to test the code.
