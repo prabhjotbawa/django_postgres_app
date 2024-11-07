@@ -119,7 +119,7 @@ jobs:
 
       - name: Update image tag
         run: |
-          cd ${{ env.TARGET_REPO }}
+          cd ./target-repo
           # Update the image tag in the target file
           # This example assumes YAML format - adjust the command based on your file format
           yq e ".image.django.tag = \"${{ github.sha }}\"" -i ${{ env.TARGET_FILE_PATH }}
