@@ -12,6 +12,9 @@ env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
   IMAGE_NAME: mywebapp
   PLATFORMS: linux/amd64,linux/arm64
+  TARGET_REPO: prabhjotbawa/helm-charts
+  TARGET_BRANCH: main
+  TARGET_FILE_PATH: helm-charts/charts/webapp/templates/django-deployment.yaml
 
 jobs:
   build:
@@ -105,3 +108,27 @@ jobs:
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          token: ${{ secrets.PAT_TOKEN }}  # Need a Personal Access Token with repo access
+          path: target-repo
+
+      - name: Update image tag
+        run: |
+          cd target-repo
+          # Update the image tag in the target file
+          # This example assumes YAML format - adjust the command based on your file format
+          yq e ".image.django.tag = \"${{ github.sha }}\"" -i ${{ env.TARGET_FILE_PATH }}
+
+      - name: Commit and push changes
+        run: |
+          cd target-repo
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add ${{ env.TARGET_FILE_PATH }}
+          git commit -m "Update image tag to ${{ github.sha }}"
+          git push
