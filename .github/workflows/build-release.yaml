@@ -14,7 +14,7 @@ env:
   PLATFORMS: linux/amd64,linux/arm64
   TARGET_REPO: prabhjotbawa/helm-charts
   TARGET_BRANCH: main
-  TARGET_FILE_PATH: charts/webapp/templates/django-deployment.yaml
+  TARGET_FILE_PATH: charts/webapp/values.yaml
 
 jobs:
   build:
