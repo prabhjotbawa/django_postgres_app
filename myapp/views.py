@@ -1,10 +1,14 @@
 import os
+import time
+from datetime import datetime, timezone
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_GET
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from myproject import settings
+from myproject.utlis import check_database
 from .collectors import register_model_rows_collector
 from .models import MyModel
 from .forms import MyModelForm
@@ -45,3 +49,27 @@ def get_metrics(request):
     register_model_rows_collector()
     # Generate and return metrics in Prometheus format
     return HttpResponse(generate_latest(), content_type=CONTENT_TYPE_LATEST)
+
+
+@require_GET
+def health_check(request):
+    # Check database health
+    db_healthy, db_error = check_database()
+
+    # Prepare response data
+    health_status = {
+        "status": "healthy" if db_healthy else "unhealthy",
+        "timestamp": datetime.now(timezone.utc),
+        "version": "1.0.0",  # Your app version
+        "checks": {
+            "database": {
+                "status": "healthy" if db_healthy else "unhealthy",
+                "error": db_error
+            }
+        }
+    }
+
+    # Return 503 if any critical component is unhealthy
+    status_code = 200 if db_healthy else 503
+
+    return JsonResponse(health_status, status=status_code)

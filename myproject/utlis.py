@@ -1,6 +1,8 @@
 import os
 from _socket import gethostbyname, gethostname
 
+from django.db import connections, OperationalError
+
 
 def get_pod_ip():
     """
@@ -20,3 +22,21 @@ def get_pod_ip():
             raise Exception(f"Error reading POD_IP: {str(e)}")
 
     return pod_ip
+
+
+def check_database():
+    """
+    Check if database connections are working.
+    Returns tuple of (is_healthy, error_message)
+    """
+    try:
+        for name in connections:
+            cursor = connections[name].cursor()
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+            cursor.close()
+        return True, str("Database is up and running!!")
+    except OperationalError as e:
+        return False, str(e)
+    except Exception as e:
+        return False, str(e)
