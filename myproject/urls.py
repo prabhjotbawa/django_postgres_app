@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from myapp.views import home, get_data_inserted, debug_view, get_metrics, health_check
 
-urlpatterns = [
+urlpatterns = ([
+    path('api/', include('myapp.urls')),
     path('admin/', admin.site.urls),
     path('', home, name='home'),
     path('', include('django_prometheus.urls')),
@@ -10,4 +11,5 @@ urlpatterns = [
     path('debug/', debug_view),
     path('custom-metrics/', get_metrics),
     path('health/', health_check, name='health_check'),
-]
+])
+# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))

@@ -1,17 +1,27 @@
+import logging
 import os
-import time
 from datetime import datetime, timezone
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_GET
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from rest_framework import viewsets
 
 from myproject import settings
 from myproject.utlis import check_database
 from .collectors import register_model_rows_collector
 from .models import MyModel
 from .forms import MyModelForm
+from .serializers import ProductSerializer
+
+logger = logging.getLogger(__name__)
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """API endpoint that allows Projects to be viewed."""
+    queryset = MyModel.objects.all().order_by('name')
+    serializer_class = ProductSerializer
 
 
 def home(request):

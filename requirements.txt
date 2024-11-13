@@ -6,3 +6,4 @@ django-prometheus
 prometheus-client
 pip_prometheus
 django-db-connection-pool
+djangorestframework
