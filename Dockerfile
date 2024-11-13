@@ -20,7 +20,10 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # Copy project
-COPY . /app/
+COPY myproject ./myproject
+COPY myapp ./myapp
+COPY ./entrypoint.sh ./
+COPY ./manage.py ./
 
 EXPOSE 5001
 
