@@ -7,3 +7,4 @@ prometheus-client
 pip_prometheus
 django-db-connection-pool
 djangorestframework
+whitenoise==6.0.0

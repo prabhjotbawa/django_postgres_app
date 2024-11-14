@@ -13,4 +13,4 @@ urlpatterns = ([
                    path('debug/', debug_view),
                    path('custom-metrics/', get_metrics),
                    path('health/', health_check, name='health_check'),
-               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+               ])
