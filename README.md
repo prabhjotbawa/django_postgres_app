@@ -83,6 +83,13 @@ Please [refer](https://prabhjotbawa.github.io/helm-charts/) for details.
 If installing on AWS, prometheus or grafana can be exposed locally using `kubectl port-forward` or using an `ingress`
 resource.
 
+## Serving static files
+I have used whitenoise middleware to serve static files. Although, I have not used any custom css file, however, I have used
+the `rest_framework` to expose api's which uses css files.
+
+It's also suitable for production usage however a CDN can also be used for better performance and security.
+More details can be found [here](https://whitenoise.readthedocs.io/en/latest/django.html#use-a-content-delivery-network)
+
 ## TODO
 Add unit tests to test the code.
 Simulate scenarios to test app launch when database is created v/s database already exists.
